@@ -12,10 +12,16 @@ const connection = new Connection("https://api.devnet.solana.com", {commitment: 
 (async () => {
   
   // Create new token mint
-  // const mint = await createMint(
-  //   ???
-  // );
+  const mint = await createMint(
+    connection,
+    keypair,
+    keypair.publicKey,
+    null,
+    14
+  );
 
-  // console.log(`The unique identifier of the token is: ${mint.toBase58()}`); 
+  console.log(`The unique identifier of the token is: ${mint.toBase58()}`); 
+
+  // The unique identifier of the token is: 9eSLmXuYMqCESWxiMeWjxKk9qXSmmbHhwMZ8HtN7U4xy
 
 })();

@@ -12,7 +12,7 @@ const connection = new Connection("https://api.devnet.solana.com");
 
     console.log("PublicKey:", keypair.publicKey.toBase58())
     const balance = await connection.getBalance(keypair.publicKey)
-    console.log("Current balance is", balance / LAMPORTS_PER_SOL)
+    console.log("Current balance is", balance / LAMPORTS_PER_SOL) // Current balance is 3.908021548
 
     if (balance < 2 * LAMPORTS_PER_SOL) {
         try {
