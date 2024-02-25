@@ -18,15 +18,19 @@ const provider = new AnchorProvider(connection, new Wallet(keypair), { commitmen
 const program = new Program<Week1>(IDL, "ctf1VWeMtgxa24zZevsXqDg6xvcMVy4FbP3cxLCpGha" as Address, provider);
 
 // Create the PDA for our CTF-Week1 profile
-// const authPda = ???
+const profilePda = PublicKey.findProgramAddressSync([Buffer.from("profile"), keypair.publicKey.toBuffer()], program.programId)[0];
 
 (async () => {
 
   // Create new token mint
-  // const mint = await createMint(
-  //   ???
-  // );
+  const mint = await createMint(
+    connection,
+    keypair,
+    keypair.publicKey,
+    null,
+    14
+  );
 
-  // console.log(`The unique identifier of the token is: ${mint.toBase58()}`); 
+  console.log(`The unique identifier of the token is: ${mint.toBase58()}`); 
 
 })();

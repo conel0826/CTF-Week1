@@ -38,7 +38,6 @@ const vault = PublicKey.findProgramAddressSync([Buffer.from("vault1"), keypair.p
             mint,
             keypair.publicKey
         );
-
         // Mint some tokens!
         const mintTx = await mintTo(
             connection,
@@ -46,9 +45,10 @@ const vault = PublicKey.findProgramAddressSync([Buffer.from("vault1"), keypair.p
             mint,
             (await ownerAta).address,
             keypair.publicKey,
-            LAMPORTS_PER_SOL * 6
+            LAMPORTS_PER_SOL * 1
         )
-        
+        // todo how to resize sol count // i sumited the wrong count
+
         console.log(`Success! Check out your TX here: 
         https://explorer.solana.com/tx/${mintTx}?cluster=devnet`);
 
@@ -64,9 +64,9 @@ const vault = PublicKey.findProgramAddressSync([Buffer.from("vault1"), keypair.p
             profile: profilePda,
             vault: vault,
             mint: mint,
-            tokenProgram: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
-            associatedTokenProgram: new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'),
-            systemProgram: new PublicKey('11111111111111111111111111111111'),
+            tokenProgram: TOKEN_PROGRAM_ID,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+            systemProgram: SystemProgram.programId,
         })
         .signers([
             keypair

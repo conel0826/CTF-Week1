@@ -22,9 +22,11 @@ const profilePda = PublicKey.findProgramAddressSync([Buffer.from("profile"), key
 
 // Use the PDA for the Auth account
 // const authPda = ???
-
+// const authPda = PublicKey.findProgramAddressSync([Buffer.from("authority"), keypair.publicKey.toBuffer()], program.programId)[0];
+// console.log(authPda)
+const authPda = new PublicKey("CyZjLRQMgD4EnAfdYd4irjp5gqiQCGQzM9JH2m4S1JMh");
 // Paste here the mint address for challenge1 token
-const mint = new PublicKey("<Mint3 Address>");
+const mint = new PublicKey("9eSLmXuYMqCESWxiMeWjxKk9qXSmmbHhwMZ8HtN7U4xy");
 
 // Create the PDA for the Challenge2 Vault
 const vault = PublicKey.findProgramAddressSync([Buffer.from("vault2"), keypair.publicKey.toBuffer(), mint.toBuffer()], program.programId)[0];
@@ -36,30 +38,37 @@ const vault = PublicKey.findProgramAddressSync([Buffer.from("vault2"), keypair.p
         // NB if you get TokenAccountNotFoundError, wait a few seconds and try again!
 
         // // Create the ATA for your Wallet
-        // const ownerAta = getOrCreateAssociatedTokenAccount(
-        //     ???
-        // );
+        const ownerAta = getOrCreateAssociatedTokenAccount(
+            connection,
+            keypair,
+            mint,
+            keypair.publicKey
+        );
     
         // Complete the Challenge!
-        // const completeTx = await program.methods.completeChallenge3()
-        // .accounts({
-        //     owner: 
-        //     ata: (await ownerAta).address,
-        //     profile: 
-        //     authority: 
-        //     mint: mint,
-        //     tokenProgram: 
-        //     associatedTokenProgram: 
-        //     systemProgram:
-        // })
-        // .signers([
-        //     keypair
-        // ]).rpc();
-
-        // console.log(`Success! Check out your TX here: 
-        // https://explorer.solana.com/tx/${completeTx}?cluster=devnet`);
+        const completeTx = await program.methods.completeChallenge3()
+        .accounts({
+            owner: keypair.publicKey,
+            ata: (await ownerAta).address,
+            profile: profilePda,
+            authority: authPda,
+            mint: mint,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+            systemProgram: SystemProgram.programId
+        })
+        .signers([
+            keypair
+        ]).rpc();
+        
+        console.log(`Success! Check out your TX here: 
+        https://explorer.solana.com/tx/${completeTx}?cluster=devnet`);
 
     } catch(e) {
         console.error(`Oops, something went wrong: ${e}`)
+
+//         (node:273090) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+// (Use `node --trace-deprecation ...` to show where the warning was created)
+// Oops, something went wrong: AnchorError occurred. Error Code: ConstraintMintMintAuthority. Error Number: 2016. Error Message: A mint mint authority constraint was violated.
     }
 })();

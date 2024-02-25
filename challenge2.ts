@@ -21,7 +21,7 @@ const program = new Program<Week1>(IDL, "ctf1VWeMtgxa24zZevsXqDg6xvcMVy4FbP3cxLC
 const profilePda = PublicKey.findProgramAddressSync([Buffer.from("profile"), keypair.publicKey.toBuffer()], program.programId)[0];
 
 // Paste here the mint address for challenge1 token
-const mint = new PublicKey("<Mint2 Address>");
+const mint = new PublicKey("7aoKnq3HwAvL1ZQrv5r2TDZsFi7BziWSrtYafd6chZ8P");
 
 // Create the PDA for the Challenge2 Vault
 const vault = PublicKey.findProgramAddressSync([Buffer.from("vault2"), keypair.publicKey.toBuffer(), mint.toBuffer()], program.programId)[0];
@@ -32,38 +32,47 @@ const vault = PublicKey.findProgramAddressSync([Buffer.from("vault2"), keypair.p
         // NB if you get TokenAccountNotFoundError, wait a few seconds and try again!
 
         // Create the ATA for your Wallet
-        // const ownerAta = getOrCreateAssociatedTokenAccount(
-        //     ???
-        // );
+        const ownerAta = getOrCreateAssociatedTokenAccount(
+            connection,
+            keypair,
+            mint,
+            keypair.publicKey
+        );
         
         // // Mint some tokens!
-        // const mintTx = await mintTo(
-        //     ???
-        //     (await ownerAta).address, 
-        //     ???
-        // )
+        const mintTx = await mintTo(
+            connection,
+            keypair,
+            mint,
+            (await ownerAta).address, 
+            keypair.publicKey,
+            6
+        )
         
-        // console.log(`Success! Check out your TX here: 
-        // https://explorer.solana.com/tx/${mintTx}?cluster=devnet`);
+        console.log(`Success! Check out your TX here: 
+        https://explorer.solana.com/tx/${mintTx}?cluster=devnet`);
+
+        // Success! Check out your TX here: 
+        // https://explorer.solana.com/tx/4e69BKjhJ2GRwChSmqLysvNVHmL8z8NZKsEdKW4PkQQJBqMZjHz543TSdjpg4FJWrWCEhmQgHEYTmRj9qcU8DwVc?cluster=devnet
         
         // Complete the Challenge!
-        // const completeTx = await program.methods.completeChallenge2(new BN(<Number>))
-        // .accounts({
-        //     owner:
-        //     ata: (await ownerAta).address,
-        //     profile:
-        //     vault:
-        //     mint: 
-        //     tokenProgram: 
-        //     associatedTokenProgram:
-        //     systemProgram: 
-        // })
-        // .signers([
-        //     keypair
-        // ]).rpc();
+        const completeTx = await program.methods.completeChallenge2(new BN(0.00000000000006))
+        .accounts({
+            owner: keypair.publicKey,
+            ata: (await ownerAta).address,
+            profile: profilePda,
+            vault: vault,
+            mint: mint,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+            systemProgram: SystemProgram.programId
+        })
+        .signers([
+            keypair
+        ]).rpc();
 
-        // console.log(`Success! Check out your TX here: 
-        // https://explorer.solana.com/tx/${completeTx}?cluster=devnet`);
+        console.log(`Success! Check out your TX here: 
+        https://explorer.solana.com/tx/${completeTx}?cluster=devnet`);
 
     } catch(e) {
         console.error(`Oops, something went wrong: ${e}`)
